@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #F8FAFC;
+  --foreground: #171717;
+
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+
+  --primary: #4f46e5;
+  --primary-900: #312E81;
+  --primary-foreground: #ffffff;
+
+  --border: #E2E8F0;
+
+  --muted: #64748B;
+  --muted-foreground: #64748b;
+
+  --secondary: #84CC16;
+  --secondary-foreground: #4F46E5;
+}
+
+:root.dark {
+  --background: #0b1220;
+  --foreground: #e5e7eb;
+
+  --surface: #0f172a;
+  --surface-muted: #f8fafc;
+
+  --primary: #6366F1;
+  --primary-900: #1E1B4B;
+  --primary-foreground: #0b1220;
+
+  --border: #1f2937;
+
+  --muted: #94a3b8;
+  --muted-foreground: #64748b;
+
+  --secondary: #65A30D;
+  --secondary-foreground: #E0E7FF;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-primary: var(--primary);
+  --color-primary-900: var(--primary-900);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, --sysappletem, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+}
+
+/* Custom Scrollbar */
+.hideScrollbar-custom {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hideScrollbar-custom::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 160, 167, 0.3) transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(184, 155, 148, 0.5);
+}
+
+.dark .scrollbar-custom {
+  scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: rgba(211, 105, 18, 0.2);
+}
+
+.dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(20, 207, 67, 0.4);
+}
+
+/* Auth page side bg img */
+.map-bg {
+  background-color: #e2e8f0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2394a3b8' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
