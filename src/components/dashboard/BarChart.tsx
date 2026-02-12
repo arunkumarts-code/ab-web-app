@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
 interface BarChartProps {
-  data: Array<{ game: number; profite: number }>;
+  data: { profit: number }[];
   height?: string;
   gap?: string;
 }
@@ -13,14 +13,6 @@ const BarChart: React.FC<BarChartProps> = ({
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  if (!data || data.length === 0) return null;
-
-  const profits = data.map((d) => d.profite);
-
-  const maxProfit = Math.max(...profits);
-  const minProfit = Math.min(...profits);
-  const maxAbs = Math.max(Math.abs(maxProfit), Math.abs(minProfit)) || 1;
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
@@ -29,6 +21,14 @@ const BarChart: React.FC<BarChartProps> = ({
       });
     }
   }, [data]);
+
+  if (!data || data.length === 0) return null;
+
+  const profits = data.map((d) => d.profit);
+
+  const maxProfit = Math.max(...profits);
+  const minProfit = Math.min(...profits);
+  const maxAbs = Math.max(Math.abs(maxProfit), Math.abs(minProfit)) || 1;
 
   const getColorClass = (profit: number): string => {
     if (profit === 0) return "bg-gray-300 dark:bg-gray-700";
@@ -62,32 +62,38 @@ const BarChart: React.FC<BarChartProps> = ({
         <div
           className={`flex items-end ${height} px-2 pb-1 ${gap} min-w-max`}
         >
-          {data.map((item) => (
+          {data.map((item, index) => (
             <div
-              key={item.game}
-              className={`min-w-10 max-w-15 rounded-xs ${getColorClass(
-                item.profite
-              )}`}
-              style={{ height: `${getHeight(item.profite)}%` }}
+              key={index}
+              className={` rounded-xs ${getColorClass(
+                item.profit
+              )} 
+              w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20
+              min-w-8 sm:min-w-10 md:min-w-12 lg:min-w-16 xl:min-w-20
+              max-w-8 sm:max-w-10 md:max-w-12 lg:max-w-16 xl:max-w-20`}
+              style={{ height: `${getHeight(item.profit)}%` }}
             />
           ))}
         </div>
 
-        <div
-          className={`flex px-2 ${gap} mt-2 min-w-max`}
-        >
-          {data.map((item) => (
+        <div className={`flex px-2 ${gap} mt-2 min-w-max`}>
+          {data.map((item, index) => (
             <div
-              key={`label-${item.game}`}
-              className={`min-w-10 max-w-15 text-center text-xs font-medium ${item.profite < 0
-                  ? "text-red-500 dark:text-red-400"
-                  : item.profite > 0
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
+              key={`label-${index}`}
+              className={` text-center font-medium
+              ${item.profit < 0
+                    ? "text-red-500 dark:text-red-400"
+                    : item.profit > 0
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-gray-500 dark:text-gray-400"
+                  }
+              w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20
+              min-w-8 sm:min-w-10 md:min-w-12 lg:min-w-16 xl:min-w-20
+              max-w-8 sm:max-w-10 md:max-w-12 lg:max-w-16 xl:max-w-20
+              text-[10px] sm:text-xs md:text-sm lg:text-base`}
             >
-              {item.profite > 0 ? "+" : ""}
-              {item.profite}
+              {item.profit > 0 ? "+" : ""}
+              {item.profit}
             </div>
           ))}
         </div>

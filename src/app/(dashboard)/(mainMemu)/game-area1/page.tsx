@@ -14,7 +14,7 @@ import GlobalLoader from "@/components/common/GlobalLoader";
 import { MM_LISTES } from "@/constants/money-management/mm-lists";
 import { updateEyeRoad } from "@/components/roads/generate-road";
 import PLLineChart from "@/components/game-area/PLLineChart";
-import { addHand, getGameResults, newGame, skipHand, undoHand } from "@/services/game.services";
+import { addHand, getGameResults, newGame, skipHand, undoHand } from "@/services/game.service";
 import { GAME_TYPE } from "@/constants/games/game-types";
 import { MM_TYPES } from "@/constants/money-management/mm-types";
 
