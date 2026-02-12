@@ -205,6 +205,7 @@ export const AuthContextProvider = ({
             isSyncing.current = true;
 
             try {
+               setLoading(true);
                const token = await currentUser.getIdToken(true);
                setFbToken(token);
 

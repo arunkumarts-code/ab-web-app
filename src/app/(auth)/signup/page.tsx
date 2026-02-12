@@ -40,7 +40,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl bg-surface rounded-3xl shadow-float overflow-hidden flex ">
+    <div className="w-full max-w-5xl bg-surface rounded-3xl shadow-lg overflow-hidden flex ">
 
       {/* LEFT: SIGN UP FORM */}
       <div className="w-full md:w-1/2 flex flex-col relative">

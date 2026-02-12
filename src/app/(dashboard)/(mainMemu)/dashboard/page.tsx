@@ -2,7 +2,7 @@
 
 import GameProfitBars from "@/components/dashboard/BarChart";
 import { JSX, useState } from "react";
-import { FaWallet, FaArrowUp, FaChartLine, FaMedal, FaTrophy } from "react-icons/fa6";
+import { FaArrowUp, FaChartLine, FaMedal, FaTrophy } from "react-icons/fa6";
 
 const PERIODS = ["Day", "Week", "Month", "Quarter", "Year"];
 
@@ -64,24 +64,28 @@ const liveWins = [
 ];
 
 const gameData = [
-  { game: 1, profite: 50 },
-  { game: 2, profite: 150 },
-  { game: 3, profite: 100 },
-  { game: 4, profite: -20 },
-  { game: 5, profite: 50 },
-  { game: 6, profite: -150 },
-  // { game: 7, profite: 80 },
-  // { game: 8, profite: 120 },
-  // { game: 9, profite: 60 },
-  // { game: 10, profite: -40 },
-  // { game: 11, profite: -40 },
-  // { game: 17, profite: 300 },
-  // { game: 18, profite: -46 },
-  // { game: 19, profite: 36 },
-  // { game: 20, profite: 56 },
-  // { game: 21, profite: 16 },
-  // { game: 22, profite: -36 },
-  // { game: 23, profite: 96 },
+  { game: 1, profite: 500 },
+  { game: 2, profite: 1500 },
+  { game: 3, profite: 1000 },
+  { game: 4, profite: -200 },
+  { game: 5, profite: 500 },
+  { game: 6, profite: -500 },
+  { game: 7, profite: 800 },
+  { game: 8, profite: 1200 },
+  { game: 9, profite: 600 },
+  { game: 10, profite: -1000 },
+  { game: 11, profite: 400 },
+  { game: 17, profite: -100 },
+  { game: 18, profite: 700 },
+  { game: 19, profite: 360 },
+  { game: 20, profite: 560 },
+  { game: 21, profite: 160 },
+  { game: 22, profite: -360 },
+  { game: 23, profite: 960 },
+  { game: 24, profite: 1200 },
+  { game: 25, profite: 800 },
+  { game: 26, profite: -400 },
+  { game: 27, profite: 600 },
 ];
 
 const topPlayers = [
@@ -224,22 +228,10 @@ const DashboardPage = () => {
           </div>
 
           {/* Mini Bar Chart */}
-          {/* <div className="mt-4 h-10 w-full rounded flex items-end px-2 pb-1 gap-1">
-            <div className="min-w-20 bg-green-200 dark:bg-green-800 h-1/2 rounded-sm"></div>
-            <div className="min-w-20 bg-green-300 dark:bg-green-700 h-3/4 rounded-sm"></div>
-            <div className="min-w-20 bg-green-400 dark:bg-green-600 h-2/3 rounded-sm"></div>
-            <div className="min-w-20 bg-green-500 dark:bg-green-500 h-full rounded-sm"></div>
-            <div className="min-w-20 bg-red-400 dark:bg-red-400 h-4/5 rounded-sm"></div>
-            <div className="min-w-20 bg-green-300 dark:bg-green-700 h-3/5 rounded-sm"></div>
-            <div className="min-w-20 bg-green-300 dark:bg-green-700 h-3/5 rounded-sm"></div>
-            <div className="min-w-20 bg-green-300 dark:bg-green-700 h-3/5 rounded-sm"></div>
-            <div className="min-w-20 bg-green-300 dark:bg-green-700 h-3/5 rounded-sm"></div>
-          </div> */}
           <GameProfitBars 
             data={gameData} 
             height="h-20"
             gap="gap-2"
-            barWidth="w-18" 
           />
         </div>
 
@@ -290,7 +282,6 @@ const DashboardPage = () => {
               <p className="text-sm text-muted">Rankings based on highest profit for the selected period.
               </p>
             </div>
-            <button className="text-sm text-primary font-semibold hover:underline">View All</button>
           </div>
 
           <div className="overflow-auto flex-1 p-0 scrollbar-custom">

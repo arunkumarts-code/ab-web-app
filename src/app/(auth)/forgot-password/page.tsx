@@ -39,7 +39,7 @@ const ForgotPasswordPage = () => {
    };
 
    return (
-      <div className="w-full max-w-5xl bg-surface rounded-3xl shadow-float overflow-hidden flex min-h-[600px]">
+      <div className="w-full max-w-5xl bg-surface rounded-3xl shadow-lg overflow-hidden flex min-h-[600px]">
 
          {/* LEFT: FORM */}
          <div className="w-full md:w-1/2 flex flex-col relative">

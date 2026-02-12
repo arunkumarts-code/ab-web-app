@@ -11,20 +11,18 @@ import { BsGrid3X3GapFill } from "react-icons/bs";
 import { FaUndo, FaTrashAlt, FaWallet } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import GlobalLoader from "@/components/common/GlobalLoader";
-import { addHand, getCurrectGameData, loadResults, restartGame, skipHand, undoHand } from "@/services/games";
-import { USER_GAME_RESULT, USER_PROFILE } from "@/constants/roads-list";
-import { MM_LISTES } from "@/services/money-management/constants/mm-lists";
+import { MM_LISTES } from "@/constants/money-management/mm-lists";
 import { updateEyeRoad } from "@/components/roads/generate-road";
 import PLLineChart from "@/components/game-area/PLLineChart";
+import { addHand, getGameResults, newGame, skipHand, undoHand } from "@/services/game.services";
+import { GAME_TYPE } from "@/constants/games/game-types";
+import { MM_TYPES } from "@/constants/money-management/mm-types";
 
 const GameArea1Page = () => {
-  const [currentGameData, setCurrentGameData] = useState<any>(null);
+  const [currentGame, setCurrentGame] = useState<any>(null);
   const [openMenuDial, setOpenMenuDial] = useState(false);
-  const [currentResult, setCurrentResult] = useState<any[]>([]);
+  const [convertedResult, setConvertedResult] = useState<any[]>([]);
   const [loadingGame, setLoadingGame] =useState(true);
-  const [mmStepList, setMMStepList] = useState<any[]>([]);
-  const [mmStepData, setMMStepData] = useState<any | null>(null);
-  const [mmStepIndex, setMMStepIndex] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
   const activeStepRef = useRef<HTMLDivElement | null>(null);
 
@@ -34,7 +32,7 @@ const GameArea1Page = () => {
       isBankerPair: false,
       isPlayerPair: false
     };
-    const nextBankerResult = [...currentResult, bankerRoadData];
+    const nextBankerResult = [...convertedResult, bankerRoadData];
     const bankerEye = updateEyeRoad(nextBankerResult, 1);
     const bankerSmall = updateEyeRoad(nextBankerResult, 2);
     const bankerRoach = updateEyeRoad(nextBankerResult, 4);
@@ -47,7 +45,7 @@ const GameArea1Page = () => {
       isBankerPair: false,
       isPlayerPair: false
     };
-    const nextPlayerResult = [...currentResult, playerRoadData];
+    const nextPlayerResult = [...convertedResult, playerRoadData];
     const playerEye = updateEyeRoad(nextPlayerResult, 1);
     const playerSmall = updateEyeRoad(nextPlayerResult, 2);
     const playerRoach = updateEyeRoad(nextPlayerResult, 4);
@@ -68,7 +66,7 @@ const GameArea1Page = () => {
     }
 
     return [bankerResult, playerResult]
-  }, [currentResult]);
+  }, [convertedResult]);
 
   const roadRefs = {
     bigRoad: useRef<HTMLDivElement>(null),
@@ -86,19 +84,22 @@ const GameArea1Page = () => {
     roachRoad: 0,
   });
 
-  const getCurrentGameData = () => {
-    const gameCurrectGameData = getCurrectGameData();
-    setCurrentGameData(gameCurrectGameData);
-    setMMStepIndex(gameCurrectGameData.MMStepIndex);
+  const loadGameResults = async () => {
+    try {
+      const gameData = await getGameResults();
+      setConvertedResult(gameData.convertedResult);
+      setCurrentGame(gameData.currentGame);
+
+    } catch (error) {
+      console.error("Error loading game results:", error);
+    }
   }
 
-  const getMMSteps = () => {
-    const userProfile = JSON.parse(localStorage.getItem(USER_PROFILE) ?? "{}");
-    const mmData = MM_LISTES[userProfile.defaultMM];
-    setMMStepData(mmData);
-    const steps = mmData.mmStepsList || [];
-    setMMStepList(steps);
-  }
+  const mmStepList = useMemo(() => {
+    if (!currentGame) return [];
+    const mmData = MM_LISTES[currentGame.MMId];
+    return mmData.mmStepsList || [];
+  }, [currentGame]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -112,29 +113,17 @@ const GameArea1Page = () => {
   }, []);
 
   useEffect(() => {
-    const userProfileStore = localStorage.getItem(USER_PROFILE);
-    const userProfile = JSON.parse(userProfileStore ?? "{}");
-    
-    const profile = {
-      ...userProfile,
-      defaultGame: "5d0de929-0a27-45a7-8811-443856875995",
-      defaultMM: "ee065760-ffe2-4bd0-9287-9dba6569e1bf",
-      // defaultMM: "30b57f20-d31b-4bce-a130-60662c95c585",
-      defaultBaseUnit: 10,
-      defaultStartingBalance: 300
-    };
+  const init = async () => {
+    try {
+      setLoadingGame(true);
+      await loadGameResults();
+    } finally {
+      setLoadingGame(false);
+    }
+  };
 
-    localStorage.setItem(
-      USER_PROFILE,
-      JSON.stringify(profile)
-    );
-
-    const gameResult = loadResults();
-    setCurrentResult(gameResult);
-    getMMSteps();
-    getCurrentGameData();
-    setLoadingGame(false);
-  }, []);
+  init();
+}, []);
   
   useEffect(() => {
     if (loadingGame) return;
@@ -158,44 +147,45 @@ const GameArea1Page = () => {
     return () => observers.forEach((o) => o.disconnect());
   }, [loadingGame]);
 
-  useEffect(() => {
-    activeStepRef.current?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    });
-  }, [mmStepIndex]);
-
-  const handleAddHand = (handType: "P" | "B" | "T") => {
+  const handleAddHand = async (handType: "P" | "B" | "T") => {
     setLoadingGame(true);
-    const result = addHand(handType);
-    setCurrentResult(result);
-    getCurrentGameData();
+
+    const gameData = await addHand(handType);
+    setConvertedResult(gameData.convertedResult);
+    setCurrentGame(gameData.currentGame);
+
     setLoadingGame(false);
   }
 
-  const handleRestart = () => {
+  const handleRestart = async () => {
     setLoadingGame(true);
     setOpenMenuDial(false);
-    const result = restartGame();
-    setCurrentResult(result);
-    getCurrentGameData();
+
+    const gameData = await newGame(GAME_TYPE.DARK_SMOKE, MM_TYPES.ORC_III_MM);
+    setConvertedResult(gameData.convertedResult);
+    setCurrentGame(gameData.currentGame);
+
     setLoadingGame(false);
   }
 
-  const handleUndo = () => {
+  const handleUndo = async () => {
     setLoadingGame(true);
     setOpenMenuDial(false);
-    const result = undoHand();
-    setCurrentResult(result);
-    getCurrentGameData();
+
+    const gameData = await undoHand();
+    setConvertedResult(gameData.convertedResult);
+    setCurrentGame(gameData.currentGame);
+
     setLoadingGame(false);
   }
 
-  const hadleSkip = () => {
+  const handleSkip = async () => {
     setLoadingGame(true);
-    skipHand();
-    getCurrentGameData();
+
+    const gameData = await skipHand();
+    setConvertedResult(gameData.convertedResult);
+    setCurrentGame(gameData.currentGame);
+
     setLoadingGame(false);
   }
 
@@ -205,24 +195,21 @@ const GameArea1Page = () => {
     return `Step ${stepIndex + 1}`;
   };
 
-  if (loadingGame){
-    return (
-      <GlobalLoader />
-    )
-  }
-
   return (
+    <>
+    {loadingGame && <GlobalLoader />}
+
     <div className="space-y-2 flex flex-col h-full w-full">
       {/* Road Tabs */}
       <div className="space-y-3 flex flex-col h-full w-full">
         <div className="flex w-full flex-col md:flex-row gap-2">
           <div className="md:w-50 flex-1 overflow-hidden" ref={roadRefs.bigRoad}>
             <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Big Road</div>
-            <BigRoad columns={widths.bigRoad} data={currentResult} cellSize={25} />
+            <BigRoad columns={widths.bigRoad} data={convertedResult} cellSize={25} />
           </div>
           <div className="md:w-100 overflow-hidden" ref={roadRefs.beadRoad}>
             <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Bead Road</div>
-            <BeadRoad columns={widths.beadRoad} data={currentResult} cellSize={25} />
+            <BeadRoad columns={widths.beadRoad} data={convertedResult} cellSize={25} />
           </div>
         </div>
 
@@ -232,7 +219,7 @@ const GameArea1Page = () => {
               <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">
                 Big Eye Boy Road
               </div>
-              <EyeRoad columns={widths.eyeRoad} data={currentResult} cellSize={25} />
+              <EyeRoad columns={widths.eyeRoad} data={convertedResult} cellSize={25} />
             </div>
 
             <div className="min-w-[120px] h-full flex flex-col ms-2 rounded-lg overflow-hidden
@@ -316,12 +303,12 @@ const GameArea1Page = () => {
           <div className="flex flex-1 w-full flex-col md:flex-row gap-2">
             <div className="w-full overflow-hidden" ref={roadRefs.smallRoad}>
               <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Small Road</div>
-              <SmallRoad columns={widths.smallRoad} data={currentResult} cellSize={25} />
+              <SmallRoad columns={widths.smallRoad} data={convertedResult} cellSize={25} />
             </div>
 
             <div className="w-full overflow-hidden" ref={roadRefs.roachRoad}>
               <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Cockroach Road</div>
-              <RoachRoad columns={widths.roachRoad} data={currentResult} cellSize={25} />
+              <RoachRoad columns={widths.roachRoad} data={convertedResult} cellSize={25} />
             </div>
           </div>
 
@@ -341,33 +328,33 @@ const GameArea1Page = () => {
           {/* Player */}
           <div className="bg-blue-100 dark:bg-blue-500/30 px-3 py-1 flex-1  rounded-md shadow-sm border border-blue-200 dark:border-blue-900">
             <div className="font-bold text-xs text-blue-800 dark:text-white uppercase tracking-wider">Player</div>
-            <div className=" font-bold text-sm text-blue-700 dark:text-white">{currentGameData.PlayerCount}</div>
+            <div className=" font-bold text-sm text-blue-700 dark:text-white">{currentGame?.PlayerCount ?? 0}</div>
           </div>
 
           {/* Tie */}
           <div className="bg-green-100 dark:bg-green-400/30 px-3 py-1 flex-1  rounded-md shadow-sm border border-green-200 dark:border-green-900">
             <div className="font-bold text-xs text-green-800 dark:text-white uppercase tracking-wider">Tie</div>
-            <div className=" font-bold text-sm text-green-700 dark:text-white">{currentGameData.TieCount}</div>
+            <div className=" font-bold text-sm text-green-700 dark:text-white">{currentGame?.TieCount ?? 0}</div>
           </div>
 
           {/* Banker */}
           <div className="bg-red-100 dark:bg-red-500/30 px-3 py-1 flex-1  rounded-md shadow-sm border border-red-200 dark:border-pink-900">
             <div className="font-bold text-xs text-red-600 dark:text-white uppercase tracking-wider">Banker</div>
-            <div className=" font-bold text-sm text-red-700 dark:text-white">{currentGameData.BankerCount}</div>
+            <div className=" font-bold text-sm text-red-700 dark:text-white">{currentGame?.BankerCount ?? 0}</div>
           </div>
 
           {/* Hand */}
           <div className="bg-gray-300 dark:bg-gray-800 px-3 py-1 flex-1 rounded-md shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="font-bold text-xs text-gray-800 dark:text-gray-400 uppercase tracking-wider">Hand</div>
-            <div className=" font-bold text-sm text-gray-900 dark:text-gray-100">{currentGameData.HandCount}</div>
+            <div className=" font-bold text-sm text-gray-900 dark:text-gray-100">{currentGame?.HandCount ?? 0}</div>
           </div>
         </div>
 
         {/* Prediction and Stake */}
         <div className="w-full flex overflow-hidden gap-2">
           {/* Active Bet */}
-          <div className={`flex flex-1 flex-col justify-center ${currentGameData.Prediction === "Banker" ? "bg-red-400" : currentGameData.Prediction === "Player" ? "bg-blue-500" : "bg-gray-500"} rounded-lg px-2 py-1`}>
-            <div className="text-xl text-white font-bold text-center uppercase ">{currentGameData.Prediction}</div>
+          <div className={`flex flex-1 flex-col justify-center ${currentGame?.Prediction === "Banker" ? "bg-red-400" : currentGame?.Prediction === "Player" ? "bg-blue-500" : "bg-gray-500"} rounded-lg px-2 py-1`}>
+            <div className="text-xl text-white font-bold text-center uppercase ">{currentGame?.Prediction ?? "WAIT"}</div>
           </div>
 
           {/* Stake */}
@@ -376,7 +363,7 @@ const GameArea1Page = () => {
               Stake
             </span>
             <span className="text-lg font-bold text-white">
-              {(currentGameData.BetAmount).toFixed(2)}
+              {(currentGame?.BetAmount ?? 0).toFixed(2)}
             </span>
           </div>
         </div>
@@ -385,17 +372,17 @@ const GameArea1Page = () => {
         <div className="flex w-full justify-between items-center gap-1 overflow-x-auto hideScrollbar-custom">
           {(mmStepList ?? []).map((step, index) => {
             const [amount, unit, stepIndex] = step;
-            const isActive = (stepIndex === mmStepIndex - 1 && currentGameData.Prediction !== "Wait" && currentGameData.BetAmount > 0);
+            const isActive = (stepIndex === currentGame?.MMStepIndex - 1 && currentGame?.Prediction !== "Wait" && currentGame?.BetAmount > 0);
 
             return (
               <div
                 key={index}
                 ref={isActive ? activeStepRef : null}
                 className={`
-                flex-shrink-0 min-w-15 rounded-md px-2 py-1 border
+                flex-shrink-0 min-w-15 rounded-md px-2 py-1 border flex-grow
                 ${isActive
-                  ? "bg-primary text-white border-primary"
-                  : "bg-primary/10 border-border"}
+                    ? "bg-primary text-white border-primary"
+                    : "bg-primary/10 border-border"}
                 `}
               >
                 <div className="text-xs font-bold text-center">
@@ -403,7 +390,7 @@ const GameArea1Page = () => {
                 </div>
 
                 <div className="text-sm text-center">
-                  {(amount * currentGameData.BaseUnits).toFixed(2)}
+                  {(amount * (currentGame?.BaseUnits ?? 0)).toFixed(2)}
                 </div>
               </div>
             );
@@ -416,7 +403,7 @@ const GameArea1Page = () => {
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border  flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
               <div className="font-bold text-sm text-primary tracking-wider ">Start</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{currentGameData.StartingBalance.toFixed(2)}</div>
+              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.StartingBalance ?? 0).toFixed(2)}</div>
             </div>
             <div>
               <div className="p-1 text-primary ">
@@ -429,7 +416,7 @@ const GameArea1Page = () => {
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border  flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
               <div className="font-bold text-sm text-gray-400 tracking-wider ">Now</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{currentGameData.CurrentBalance.toFixed(2)}</div>
+              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.CurrentBalance ?? 0).toFixed(2)}</div>
             </div>
             <div>
               <div className="p-1 text-gray-400 ">
@@ -442,7 +429,7 @@ const GameArea1Page = () => {
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border  flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
               <div className="font-bold text-sm text-red-400 tracking-wider ">Units</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{currentGameData.Units}</div>
+              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{currentGame?.Units ?? 0}</div>
             </div>
             <div>
               <div className="p-1 text-red-400 ">
@@ -455,7 +442,7 @@ const GameArea1Page = () => {
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
               <div className="font-bold text-sm text-green-600 tracking-wider ">Profit</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{currentGameData.ProfitAmount.toFixed(2)}</div>
+              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.ProfitAmount ?? 0).toFixed(2)}</div>
             </div>
             <div>
               <div className="p-1 text-green-500 ">
@@ -468,10 +455,10 @@ const GameArea1Page = () => {
         {/* Graph */}
         <div className="flex-1 bg-surface rounded-xl border border-border shadow-sm p-3">
           <div className="text-center text-sm font-semibold text-muted mb-2">
-            Performance · Last {currentGameData.HandCount || 0} Hands
+            Performance · Last {currentGame?.HandCount || 0} Hands
           </div>
           <div className="h-[120px]">
-            <PLLineChart userGameResult={currentGameData.graphData} />
+            <PLLineChart userGameResult={currentGame?.graphData ?? []} />
           </div>
         </div>
 
@@ -541,7 +528,7 @@ const GameArea1Page = () => {
                   transition-all duration-200
                   hover:scale-110 hover:shadow-xl
                   active:scale-95'
-            onClick={hadleSkip}
+            onClick={handleSkip}
           >
             S
           </div>
@@ -592,6 +579,7 @@ const GameArea1Page = () => {
         </div>
       </div>
     </div>
+    </>
   )
 }
 
