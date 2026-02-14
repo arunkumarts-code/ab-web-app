@@ -6,7 +6,6 @@ import {
    Trophy,
    Newspaper,
    User,
-   Settings,
 } from "lucide-react";
 
 export const SIDEBAR_MENU = [
@@ -34,13 +33,8 @@ export const SIDEBAR_MENU = [
       ],
    },
    {
-      text: "Settings",
+      text: "Profile",
       icon: User,
-      path: "",
-      hasSubmenu: true,
-      submenu: [
-         { text: "Profile", path: "/profile", icon: User },
-         { text: "Preferences", path: "/preferences", icon: Settings },
-      ],
+      path: "/profile"
    },
 ];

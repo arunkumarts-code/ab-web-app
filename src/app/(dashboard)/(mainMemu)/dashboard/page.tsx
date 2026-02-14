@@ -63,11 +63,11 @@ const DashboardPage = () => {
   let percentage = 0;
   const { currentProfit, previousProfit } = profitSummary;
 
-  // if (currentProfit === 0) {
-  //   percentage = previousProfit === 0 ? 0 : -100;
-  // } else {
-  //   percentage = (previousProfit / currentProfit) * 100;
-  // }
+  if (currentProfit === 0) {
+    percentage = previousProfit === 0 ? 0 : -100;
+  } else {
+    percentage = (previousProfit / currentProfit) * 100;
+  }
   if (previousProfit === 0) {
     if (currentProfit > 0) {
       percentage = 100; 

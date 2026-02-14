@@ -17,6 +17,7 @@ import PLLineChart from "@/components/game-area/PLLineChart";
 import { addHand, getGameResults, newGame, skipHand, undoHand } from "@/services/game.service";
 import { GAME_TYPE } from "@/constants/games/game-types";
 import { MM_TYPES } from "@/constants/money-management/mm-types";
+import { useResponsiveCellSize } from "@/hooks/useResponsiveCellSize";
 
 const GameArea1Page = () => {
   const [currentGame, setCurrentGame] = useState<any>(null);
@@ -25,7 +26,8 @@ const GameArea1Page = () => {
   const [loadingGame, setLoadingGame] =useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
   const activeStepRef = useRef<HTMLDivElement | null>(null);
-
+  const responsiveCellSize = useResponsiveCellSize(25);
+  
   const roadSymbolPrediction = useMemo(() => {
     const bankerRoadData = {
       resultType: 1,
@@ -113,17 +115,17 @@ const GameArea1Page = () => {
   }, []);
 
   useEffect(() => {
-  const init = async () => {
-    try {
-      setLoadingGame(true);
-      await loadGameResults();
-    } finally {
-      setLoadingGame(false);
-    }
-  };
+    const init = async () => {
+      try {
+        setLoadingGame(true);
+        await loadGameResults();
+      } finally {
+        setLoadingGame(false);
+      }
+    };
 
-  init();
-}, []);
+    init();
+  }, []);
   
   useEffect(() => {
     if (loadingGame) return;
@@ -204,42 +206,51 @@ const GameArea1Page = () => {
       <div className="space-y-3 flex flex-col h-full w-full">
         <div className="flex w-full flex-col md:flex-row gap-2">
           <div className="md:w-50 flex-1 overflow-hidden" ref={roadRefs.bigRoad}>
-            <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Big Road</div>
-            <BigRoad columns={widths.bigRoad} data={convertedResult} cellSize={25} />
+            <div className="p-1 sm:p-1 text-[10px] sm:text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">
+              Big Road
+            </div>
+            <BigRoad columns={widths.bigRoad} data={convertedResult} cellSize={responsiveCellSize} />
           </div>
           <div className="md:w-100 overflow-hidden" ref={roadRefs.beadRoad}>
-            <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Bead Road</div>
-            <BeadRoad columns={widths.beadRoad} data={convertedResult} cellSize={25} />
+            <div className="p-1 sm:p-1 text-[10px] sm:text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">
+              Bead Road
+            </div>
+            <BeadRoad columns={widths.beadRoad} data={convertedResult} cellSize={responsiveCellSize} />
           </div>
         </div>
 
         <div className="flex w-full flex-col gap-2">
           <div className="w-full overflow-hidden flex flex-row box-border" ref={roadRefs.eyeRoad}>
             <div className="w-50 flex-1">
-              <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">
+              <div className="p-1 sm:p-1 text-[10px] sm:text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">
                 Big Eye Boy Road
               </div>
-              <EyeRoad columns={widths.eyeRoad} data={convertedResult} cellSize={25} />
+              <EyeRoad columns={widths.eyeRoad} data={convertedResult} cellSize={responsiveCellSize} />
             </div>
 
-            <div className="min-w-[120px] h-full flex flex-col ms-2 rounded-lg overflow-hidden
+            <div className="min-w-[100px] sm:min-w-[120px] md:min-w-[140px] h-full flex flex-col ms-2 rounded-lg overflow-hidden
               border border-border bg-slate-100 dark:bg-slate-900 box-border">
-              <div className="p-1 text-xs bg-primary text-white rounded-tl-lg rounded-tr-lg uppercase tracking-wider font-bold text-center">
+
+              {/* Header */}
+              <div className="px-1 py-0.5 sm:p-1 text-[10px] sm:text-xs bg-primary text-white uppercase tracking-tight sm:tracking-wider font-semibold sm:font-bold rounded-tl-md rounded-tr-md sm:rounded-tl-lg sm:rounded-tr-lg text-center">
                 Prediction
               </div>
 
-              <div className="bg-slate-100 dark:bg-slate-900 p-1 flex flex-col h-full justify-around">
-                <div className="w-full flex gap-[2px]">
+              {/* Content */}
+              <div className="bg-slate-100 dark:bg-slate-900 p-0.5 sm:p-1 md:p-1.5 flex flex-col h-full justify-around gap-0.5 sm:gap-1">
+
+                {/* Banker Row */}
+                <div className="w-full flex gap-[1px] sm:gap-[2px]">
                   <div className="w-full aspect-square flex justify-center items-center
-                      text-sm font-bold text-white rounded bg-red-600">
+                    text-[10px] sm:text-xs md:text-sm font-bold text-white rounded bg-red-600">
                     B
                   </div>
 
                   <div className="w-full aspect-square flex justify-center items-center rounded bg-white dark:bg-slate-800">
                     {roadSymbolPrediction[0].Eye !== 0 && (
                       <div
-                        className={`w-3 h-3 rounded-full border-2
-                ${roadSymbolPrediction[0].Eye === 1 ? "border-red-600" : "border-blue-500"}`}
+                        className={`w-2 h-2 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 rounded-full border-[1.5px] sm:border-2
+                        ${roadSymbolPrediction[0].Eye === 1 ? "border-red-600" : "border-blue-500"}`}
                       />
                     )}
                   </div>
@@ -247,8 +258,8 @@ const GameArea1Page = () => {
                   <div className="w-full aspect-square flex justify-center items-center rounded bg-white dark:bg-slate-800">
                     {roadSymbolPrediction[0].Small !== 0 && (
                       <div
-                        className={`w-3 h-3 rounded-full
-                ${roadSymbolPrediction[0].Small === 1 ? "bg-red-600" : "bg-blue-500"}`}
+                        className={`w-2 h-2 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 rounded-full
+                        ${roadSymbolPrediction[0].Small === 1 ? "bg-red-600" : "bg-blue-500"}`}
                       />
                     )}
                   </div>
@@ -256,24 +267,25 @@ const GameArea1Page = () => {
                   <div className="w-full aspect-square flex justify-center items-center rounded bg-white dark:bg-slate-800">
                     {roadSymbolPrediction[0].Roach !== 0 && (
                       <div
-                        className={`w-[2px] h-3 rotate-45
-                ${roadSymbolPrediction[0].Roach === 1 ? "bg-red-600" : "bg-blue-500"}`}
+                        className={`w-[1.5px] sm:w-[2px] h-2 sm:h-3 md:h-3.5 rotate-45
+                        ${roadSymbolPrediction[0].Roach === 1 ? "bg-red-600" : "bg-blue-500"}`}
                       />
                     )}
                   </div>
                 </div>
 
-                <div className="w-full flex gap-[2px]">
+                {/* Player Row */}
+                <div className="w-full flex gap-[1px] sm:gap-[2px]">
                   <div className="w-full aspect-square flex justify-center items-center
-                        text-sm font-bold text-white rounded bg-blue-600">
+                    text-[10px] sm:text-xs md:text-sm font-bold text-white rounded bg-blue-600">
                     P
                   </div>
 
                   <div className="w-full aspect-square flex justify-center items-center rounded bg-white dark:bg-slate-800">
                     {roadSymbolPrediction[1].Eye !== 0 && (
                       <div
-                        className={`w-3 h-3 rounded-full border-2
-                ${roadSymbolPrediction[1].Eye === 1 ? "border-red-600" : "border-blue-500"}`}
+                        className={`w-2 h-2 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 rounded-full border-[1.5px] sm:border-2
+                        ${roadSymbolPrediction[1].Eye === 1 ? "border-red-600" : "border-blue-500"}`}
                       />
                     )}
                   </div>
@@ -281,8 +293,8 @@ const GameArea1Page = () => {
                   <div className="w-full aspect-square flex justify-center items-center rounded bg-white dark:bg-slate-800">
                     {roadSymbolPrediction[1].Small !== 0 && (
                       <div
-                        className={`w-3 h-3 rounded-full
-                ${roadSymbolPrediction[1].Small === 1 ? "bg-red-600" : "bg-blue-500"}`}
+                        className={`w-2 h-2 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5 rounded-full
+                        ${roadSymbolPrediction[1].Small === 1 ? "bg-red-600" : "bg-blue-500"}`}
                       />
                     )}
                   </div>
@@ -290,8 +302,8 @@ const GameArea1Page = () => {
                   <div className="w-full aspect-square flex justify-center items-center rounded bg-white dark:bg-slate-800">
                     {roadSymbolPrediction[1].Roach !== 0 && (
                       <div
-                        className={`w-[2px] h-3 rotate-45
-                ${roadSymbolPrediction[1].Roach === 1 ? "bg-red-600" : "bg-blue-500"}`}
+                        className={`w-[1.5px] sm:w-[2px] h-2 sm:h-3 md:h-3.5 rotate-45
+                        ${roadSymbolPrediction[1].Roach === 1 ? "bg-red-600" : "bg-blue-500"}`}
                       />
                     )}
                   </div>
@@ -302,13 +314,17 @@ const GameArea1Page = () => {
 
           <div className="flex flex-1 w-full flex-col md:flex-row gap-2">
             <div className="w-full overflow-hidden" ref={roadRefs.smallRoad}>
-              <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Small Road</div>
-              <SmallRoad columns={widths.smallRoad} data={convertedResult} cellSize={25} />
+              <div className="p-1 sm:p-1 text-[10px] sm:text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">
+                Small Road
+              </div>
+              <SmallRoad columns={widths.smallRoad} data={convertedResult} cellSize={responsiveCellSize} />
             </div>
 
             <div className="w-full overflow-hidden" ref={roadRefs.roachRoad}>
-              <div className="p-1 text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">Cockroach Road</div>
-              <RoachRoad columns={widths.roachRoad} data={convertedResult} cellSize={25} />
+              <div className="p-1 sm:p-1 text-[10px] sm:text-xs bg-primary text-white uppercase tracking-wider font-bold rounded-tl-lg rounded-tr-lg">
+                Cockroach Road
+              </div>
+              <RoachRoad columns={widths.roachRoad} data={convertedResult} cellSize={responsiveCellSize} />
             </div>
           </div>
 
@@ -317,36 +333,37 @@ const GameArea1Page = () => {
 
       {/* Prediction */}
       <div className="space-y-2">
+
         {/* Parity Items */}
         <div className="w-full flex justify-between items-center gap-2">
           {/* Parity */}
           <div className="bg-gray-200 dark:bg-gray-800 px-3 py-1 flex-1  rounded-md shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="font-bold text-xs text-gray-800 dark:text-gray-400 uppercase tracking-wider">Parity</div>
-            <div className=" font-bold text-sm text-gray-900 dark:text-gray-100">1:3:1</div>
+            <div className="font-bold text-[11px] sm:text-xs text-gray-800 dark:text-gray-400 uppercase tracking-wider">Parity</div>
+            <div className=" font-bold text-[12px] sm:text-xs md:text-sm text-gray-900 dark:text-gray-100">1 : 3 : 1</div>
           </div>
 
           {/* Player */}
           <div className="bg-blue-100 dark:bg-blue-500/30 px-3 py-1 flex-1  rounded-md shadow-sm border border-blue-200 dark:border-blue-900">
-            <div className="font-bold text-xs text-blue-800 dark:text-white uppercase tracking-wider">Player</div>
-            <div className=" font-bold text-sm text-blue-700 dark:text-white">{currentGame?.PlayerCount ?? 0}</div>
+            <div className="font-bold text-[11px] sm:text-xs text-blue-800 dark:text-white uppercase tracking-wider">Player</div>
+            <div className=" font-bold text-[12px] sm:text-xs md:text-sm text-blue-700 dark:text-white">{currentGame?.PlayerCount ?? 0}</div>
           </div>
 
           {/* Tie */}
           <div className="bg-green-100 dark:bg-green-400/30 px-3 py-1 flex-1  rounded-md shadow-sm border border-green-200 dark:border-green-900">
-            <div className="font-bold text-xs text-green-800 dark:text-white uppercase tracking-wider">Tie</div>
-            <div className=" font-bold text-sm text-green-700 dark:text-white">{currentGame?.TieCount ?? 0}</div>
+            <div className="font-bold text-[11px] sm:text-xs text-green-800 dark:text-white uppercase tracking-wider">Tie</div>
+            <div className=" font-bold text-[12px] sm:text-xs md:text-sm text-green-700 dark:text-white">{currentGame?.TieCount ?? 0}</div>
           </div>
 
           {/* Banker */}
           <div className="bg-red-100 dark:bg-red-500/30 px-3 py-1 flex-1  rounded-md shadow-sm border border-red-200 dark:border-pink-900">
-            <div className="font-bold text-xs text-red-600 dark:text-white uppercase tracking-wider">Banker</div>
-            <div className=" font-bold text-sm text-red-700 dark:text-white">{currentGame?.BankerCount ?? 0}</div>
+            <div className="font-bold text-[11px] sm:text-xs text-red-600 dark:text-white uppercase tracking-wider">Banker</div>
+            <div className=" font-bold text-[12px] sm:text-xs md:text-sm text-red-700 dark:text-white">{currentGame?.BankerCount ?? 0}</div>
           </div>
 
           {/* Hand */}
           <div className="bg-gray-300 dark:bg-gray-800 px-3 py-1 flex-1 rounded-md shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="font-bold text-xs text-gray-800 dark:text-gray-400 uppercase tracking-wider">Hand</div>
-            <div className=" font-bold text-sm text-gray-900 dark:text-gray-100">{currentGame?.HandCount ?? 0}</div>
+            <div className="font-bold text-[11px] sm:text-xs text-gray-800 dark:text-gray-400 uppercase tracking-wider">Hand</div>
+            <div className=" font-bold text-[12px] sm:text-xs md:text-sm text-gray-900 dark:text-gray-100">{currentGame?.HandCount ?? 0}</div>
           </div>
         </div>
 
@@ -358,15 +375,15 @@ const GameArea1Page = () => {
           </div>
 
           {/* Stake */}
-          <div className="flex flex-1 flex-col items-center justify-center py-1 bg-gray-700 rounded-lg">
-            <span className="text-sm uppercase font-semibold text-gray-300">
+          <div className="flex flex-1 flex-col items-center py-1 bg-gray-700 rounded-lg">
+            <span className="text-xs sm:text-sm uppercase font-semibold text-gray-300">
               Stake
             </span>
-            <span className="text-lg font-bold text-white">
+            <span className="text-lg font-bold text-white ">
               {(currentGame?.BetAmount ?? 0).toFixed(2)}
             </span>
           </div>
-        </div>
+          </div>
 
         {/* MM */}
         <div className="flex w-full justify-between items-center gap-1 overflow-x-auto hideScrollbar-custom">
@@ -385,11 +402,11 @@ const GameArea1Page = () => {
                     : "bg-primary/10 border-border"}
                 `}
               >
-                <div className="text-xs font-bold text-center">
+                <div className="text-[11px] sm:text-xs font-bold text-center">
                   {getStepLabel(stepIndex)}
                 </div>
 
-                <div className="text-sm text-center">
+                <div className="text-[12px] sm:text-sm text-center">
                   {(amount * (currentGame?.BaseUnits ?? 0)).toFixed(2)}
                 </div>
               </div>
@@ -402,12 +419,12 @@ const GameArea1Page = () => {
           {/* Start */}
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border  flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
-              <div className="font-bold text-sm text-primary tracking-wider ">Start</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.StartingBalance ?? 0).toFixed(2)}</div>
+              <div className="font-bold text-xs sm:text-sm text-primary tracking-wider ">Start</div>
+              <div className="pt-1 font-bold text-[12px] sm:text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.StartingBalance ?? 0).toFixed(2)}</div>
             </div>
             <div>
               <div className="p-1 text-primary ">
-                <Briefcase className="text-sm w-4 h-4" />
+                <Briefcase className="text-xs w-3 h-3 md:w-4 md:h-4" />
               </div>
             </div>
           </div>
@@ -415,12 +432,12 @@ const GameArea1Page = () => {
           {/* Now */}
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border  flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
-              <div className="font-bold text-sm text-gray-400 tracking-wider ">Now</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.CurrentBalance ?? 0).toFixed(2)}</div>
+              <div className="font-bold text-xs sm:text-sm text-gray-400 tracking-wider ">Now</div>
+              <div className="pt-1 font-bold text-[12px] sm:text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.CurrentBalance ?? 0).toFixed(2)}</div>
             </div>
             <div>
               <div className="p-1 text-gray-400 ">
-                <FaWallet className="text-sm" />
+                <FaWallet className="text-xs md:text-sm" />
               </div>
             </div>
           </div>
@@ -428,12 +445,12 @@ const GameArea1Page = () => {
           {/* Units */}
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border  flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
-              <div className="font-bold text-sm text-red-400 tracking-wider ">Units</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{currentGame?.Units ?? 0}</div>
+              <div className="font-bold text-xs sm:text-sm text-red-400 tracking-wider ">Units</div>
+              <div className="pt-1 font-bold text-[12px] sm:text-sm text-gray-900 dark:text-gray-100 ">{currentGame?.Units ?? 0}</div>
             </div>
             <div>
               <div className="p-1 text-red-400 ">
-                <Package className="text-sm w-4 h-4" />
+                <Package className="text-xs md:text-sm w-4 h-4" />
               </div>
             </div>
           </div>
@@ -441,12 +458,12 @@ const GameArea1Page = () => {
           {/* Profit */}
           <div className="bg-surface p-2 flex-1 min-w-20 rounded-md shadow-sm border border-border flex justify-between">
             <div className="pl-1 flex flex flex-col justify-start flex-1">
-              <div className="font-bold text-sm text-green-600 tracking-wider ">Profit</div>
-              <div className="pt-1 font-bold text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.ProfitAmount ?? 0).toFixed(2)}</div>
+              <div className="font-bold text-xs sm:text-sm text-green-600 tracking-wider ">Profit</div>
+              <div className="pt-1 font-bold text-[12px] sm:text-sm text-gray-900 dark:text-gray-100 ">{(currentGame?.ProfitAmount ?? 0).toFixed(2)}</div>
             </div>
             <div>
               <div className="p-1 text-green-500 ">
-                <TrendingUp className="text-sm w-4 h-4" />
+                <TrendingUp className="text-xs md:text-sm w-4 h-4" />
               </div>
             </div>
           </div>
@@ -454,7 +471,7 @@ const GameArea1Page = () => {
 
         {/* Graph */}
         <div className="flex-1 bg-surface rounded-xl border border-border shadow-sm p-3">
-          <div className="text-center text-sm font-semibold text-muted mb-2">
+          <div className="text-center text-xs sm:text-sm font-semibold text-muted mb-2">
             Performance · Last {currentGame?.HandCount || 0} Hands
           </div>
           <div className="h-[120px]">
@@ -470,7 +487,7 @@ const GameArea1Page = () => {
                   shadow-lg
                   font-bold text-xl
                   rounded-full
-                  border-2 border-gray-400
+                  border-2 border-blue-800/20
                   bg-blue-500
                   text-white
                   cursor-pointer
@@ -487,7 +504,7 @@ const GameArea1Page = () => {
                   shadow-lg
                   font-bold text-xl
                   rounded-full
-                  border-2 border-gray-400
+                  border-2 border-red-800/20
                   bg-red-400
                   text-white
                   cursor-pointer
@@ -504,7 +521,7 @@ const GameArea1Page = () => {
                   shadow-lg
                   font-bold text-xl
                   rounded-full
-                  border-2 border-gray-400
+                  border-2 border-green-800/20
                   bg-green-500
                   text-white
                   cursor-pointer
@@ -521,7 +538,7 @@ const GameArea1Page = () => {
                   shadow-lg
                   font-bold text-xl
                   rounded-full
-                  border-2 border-gray-400
+                  border-2 border-yellow-800/20
                   bg-yellow-500
                   text-white
                   cursor-pointer
@@ -567,7 +584,7 @@ const GameArea1Page = () => {
               onClick={() => setOpenMenuDial(!openMenuDial)}
               className='flex justify-center items-center
                 w-14 h-14 shadow-lg font-bold text-xl
-                rounded-full border-2 border-gray-400
+                rounded-full border-2 border-gray-800/20
                 bg-gray-500 text-white cursor-pointer
                 transition-all duration-200
                 hover:scale-110 hover:shadow-xl

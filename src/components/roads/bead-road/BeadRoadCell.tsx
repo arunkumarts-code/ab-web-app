@@ -1,9 +1,9 @@
 interface BeadRoadCellProps {
    cell: any;
-   size: number;
+   cellSize: number;
 }
 
-export function BeadRoadCell({ cell, size }: BeadRoadCellProps) {
+export function BeadRoadCell({ cell, cellSize }: BeadRoadCellProps) {
    if (!cell) return null;
 
    const bgColor =
@@ -12,13 +12,15 @@ export function BeadRoadCell({ cell, size }: BeadRoadCellProps) {
          : cell === 2
             ? "bg-blue-600"
             : "bg-green-500";
+            
+   const circleSize = cellSize * 0.8;
 
    return (
       <div className={` rounded-full border-box flex justify-center items-center ${bgColor} `} 
-         style={{ width: size, height: size }}
+         style={{ width: circleSize, height: circleSize }}
       > 
          <div className="border-2 border-surface rounded-full " 
-            style={{ width: size-2, height: size-2 }}
+            style={{ width: circleSize * 0.9, height: circleSize * 0.9 }}
          ></div>
       </div>
    );

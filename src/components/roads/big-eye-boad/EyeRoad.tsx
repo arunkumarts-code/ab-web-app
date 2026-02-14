@@ -29,7 +29,7 @@ const EyeRoad = ({ columns, data, cellSize=32 }: { columns: number, data: GameRe
                   {cell.map((v: any, i: any) =>
                      v !== null ? (
                         <div key={`${x}-${y}-${i}`} className="flex justify-center items-center">
-                           <EyeRoadCell cell={v} size={10} />
+                           <EyeRoadCell cell={v} cellSize={cellSize} />
                         </div>
                      ) : (
                         <div key={`${x}-${y}-${i}`} />

@@ -5,6 +5,7 @@ import RoadGrid from '../RoadGrid';
 import { GameResult } from '@/types';
 
 const BigRoad = ({ columns, data, cellSize=32 }: { columns: number, data: GameResult[], cellSize?:number }) => {
+
    const bigRoadData = useMemo(() => {
       const big = updateBigRoad(data);
       return big.board
@@ -25,7 +26,7 @@ const BigRoad = ({ columns, data, cellSize=32 }: { columns: number, data: GameRe
                }}
                className="flex items-center justify-center border-1 border-border"
             >
-               <BigRoadCell cell={cell} size={20} />
+               <BigRoadCell cell={cell} cellSize={cellSize} />
             </div>
             ) : null
          )

@@ -31,7 +31,7 @@ const SmallRoad = ({ columns, data, cellSize = 32 }: { columns: number, data: Ga
                   {cell.map((v: any, i: any) =>
                      v !== null ? (
                         <div key={`${x}-${y}-${i}`} className="flex justify-center items-center">
-                           <SmallRoadCell cell={v} size={10} />
+                           <SmallRoadCell cell={v} cellSize={cellSize} />
                         </div>
                      ) : (
                         <div key={`${x}-${y}-${i}`} />

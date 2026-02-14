@@ -5,6 +5,7 @@ import { BeadRoadCell } from './BeadRoadCell';
 import { GameResult } from '@/types';
 
 const BeadRoad = ({ columns, data ,cellSize=32 }: { columns: number, data: GameResult[], cellSize?: number }) => {
+   
    const beadRoadData = useMemo(() => {
       const bead = updateDishRoad(data);
       return bead
@@ -25,7 +26,7 @@ const BeadRoad = ({ columns, data ,cellSize=32 }: { columns: number, data: GameR
                }}
                className="flex items-center justify-center border-1 border-border"
             >
-               <BeadRoadCell cell={cell} size={20} />
+               <BeadRoadCell cell={cell} cellSize={cellSize} />
             </div>
             ) : null
          )

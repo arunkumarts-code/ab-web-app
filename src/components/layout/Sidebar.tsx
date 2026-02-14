@@ -70,45 +70,61 @@ export function DashboardSidebar({ open, onClose }: SidebarProps) {
 
                return (
                   <div key={section.text} className="space-y-1">
-                     {/* Section Header */}
-                     <button
-                        onClick={() => toggleSection(section.text)}
-                        className="flex w-full items-center gap-3 px-4 py-3 rounded-xl font-bold text-muted hover:bg-background hover:text-foreground transition-all group"
-                     >
-                        <SectionIcon className="h-5 w-5 group-hover:text-primary transition-colors" />
-                        <span>{section.text}</span>
-                        {isOpen ? (
-                           <ChevronUp className="h-4 w-4 ml-auto" />
-                        ) : (
-                           <ChevronDown className="h-4 w-4 ml-auto" />
-                        )}
-                     </button>
+                     {section.submenu ? (
+                        <>
+                           <button
+                              onClick={() => toggleSection(section.text)}
+                              className="flex w-full items-center gap-3 px-4 py-3 rounded-xl font-bold text-muted hover:bg-background hover:text-foreground transition-all group"
+                           >
+                              <SectionIcon className="h-5 w-5 group-hover:text-primary transition-colors" />
+                              <span>{section.text}</span>
+                              {isOpen ? (
+                                 <ChevronUp className="h-4 w-4 ml-auto" />
+                              ) : (
+                                 <ChevronDown className="h-4 w-4 ml-auto" />
+                              )}
+                           </button>
 
-                     {/* Submenu */}
-                     {isOpen && (
-                        <div className="pl-10 pr-4 py-1 space-y-1">
-                           {section.submenu?.map(item => {
-                              const isActive =
-                                 pathname === item.path ||
-                                 pathname.startsWith(item.path + "/");
-                              const ItemIcon = item.icon;
+                           {isOpen && (
+                              <div className="pl-10 pr-4 py-1 space-y-1">
+                                 {section.submenu.map(item => {
+                                    const isActive =
+                                       pathname === item.path ||
+                                       pathname.startsWith(item.path + "/");
 
-                              return (
-                                 <Link key={item.path} href={item.path}>
-                                    <div
-                                       className={`flex items-center gap-3 my-1 px-3 py-2 rounded-lg text-sm transition
-                                       ${isActive
-                                          ? "text-primary bg-primary/10 font-semibold"
-                                          : "text-muted hover:text-primary hover:bg-background"
-                                       }`}
-                                    >
-                                       <ItemIcon className="h-4 w-4" />
-                                       <span>{item.text}</span>
-                                    </div>
-                                 </Link>
-                              );
-                           })}
-                        </div>
+                                    const ItemIcon = item.icon;
+
+                                    return (
+                                       <Link key={item.path} href={item.path} onClick={onClose}>
+                                          <div
+                                             className={`flex items-center gap-3 my-1 px-3 py-2 rounded-lg text-sm transition
+                                             ${isActive
+                                                ? "text-primary bg-primary/10 font-semibold"
+                                                : "text-muted hover:text-primary hover:bg-background"
+                                             }`}
+                                          >
+                                             <ItemIcon className="h-4 w-4" />
+                                             <span>{item.text}</span>
+                                          </div>
+                                       </Link>
+                                    );
+                                 })}
+                              </div>
+                           )}
+                        </>
+                     ) : (
+                        <Link href={section.path} onClick={onClose}>
+                           <div
+                              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                              ${pathname === section.path
+                                 ? "text-primary bg-primary/10"
+                                 : "text-muted hover:text-primary hover:bg-background"
+                              }`}
+                           >
+                              <SectionIcon className="h-5 w-5" />
+                              <span>{section.text}</span>
+                           </div>
+                        </Link>
                      )}
                   </div>
                );

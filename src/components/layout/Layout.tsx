@@ -1,15 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DashboardTopbar from "./Topbar";
 import DashboardSidebar from "./Sidebar";
+import { useIsDesktop } from "@/hooks/useBreakpoint";
 
 export function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isDesktop = useIsDesktop('lg');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  useEffect(() => {
+    setSidebarOpen(isDesktop);
+  }, [isDesktop]);
+
+  const handleToggleSidebar = () => {
+    if (!isDesktop) {
+      setSidebarOpen(prev => !prev);
+    }
+  };
+  
   return (
     <div className="min-h-screen flex relative">
-      <DashboardSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <DashboardSidebar open={sidebarOpen} onClose={handleToggleSidebar} />
 
       {/* Overlay for mobile */}
       {sidebarOpen && (

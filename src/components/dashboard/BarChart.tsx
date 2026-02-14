@@ -80,7 +80,7 @@ const BarChart: React.FC<BarChartProps> = ({
           {data.map((item, index) => (
             <div
               key={`label-${index}`}
-              className={` text-center font-medium
+              className={` text-center font-medium e
               ${item.profit < 0
                     ? "text-red-500 dark:text-red-400"
                     : item.profit > 0
@@ -90,7 +90,7 @@ const BarChart: React.FC<BarChartProps> = ({
               w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20
               min-w-8 sm:min-w-10 md:min-w-12 lg:min-w-16 xl:min-w-20
               max-w-8 sm:max-w-10 md:max-w-12 lg:max-w-16 xl:max-w-20
-              text-[10px] sm:text-xs md:text-sm lg:text-base`}
+              text-[5px] sm:text-xs md:text-sm lg:text-base`}
             >
               {item.profit > 0 ? "+" : ""}
               {item.profit}
